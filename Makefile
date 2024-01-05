@@ -1,10 +1,10 @@
-# cc src/main.c -o butt -I/opt/homebrew/include/SDL2 -D_THREAD_SAFE -L/opt/homebrew/lib -lSDL2
+
 
 SRC_DIR := src
 OBJ_DIR := obj
 
 
-EXE := main
+EXE := play
 SRC := $(wildcard $(SRC_DIR)/*.c)
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
