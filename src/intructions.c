@@ -66,7 +66,11 @@ void run_instruction(chip8_t* chip)
         
         // The interpreter sets the program counter to nnn.
         case 0x1:
+        {
             chip->pc = chip->instruction->nnn;
+            break;
+        }
+            
 
 
         // 2nnn - CALL addr
@@ -108,6 +112,11 @@ void run_instruction(chip8_t* chip)
         // Set Vx = Vx + kk.
 
         // Adds the value kk to the value of register Vx, then stores the result in Vx. 
+        case 0x7:
+        {
+            chip->v[chip->instruction->x] = chip->v[chip->instruction->x] + chip->instruction->kk;
+            break;
+        }
 
         // 8xy0 - LD Vx, Vy
         // Set Vx = Vy.
