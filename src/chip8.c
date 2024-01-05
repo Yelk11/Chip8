@@ -136,14 +136,19 @@ chip8_t* init_chip(char* rom_name)
 
 int main( int argc, char* args[] )
 {
-    
+    // configure
     config_t* config = calloc(1, sizeof(config_t));
-    
     config->scale_factor = 5;
+    
+    // initialize the window
     sdl_t* sdl = init_sdl(config);
+    
+    // init ship and load rom
     chip8_t* chip = init_chip("roms/IBM Logo.ch8");
+    
     SDL_Event e; 
-    bool quit = false; 
+    bool quit = false;
+    
     while( quit == false )
     { 
         while( SDL_PollEvent( &e ) )
