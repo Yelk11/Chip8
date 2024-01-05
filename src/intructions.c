@@ -182,7 +182,10 @@ void run_instruction(chip8_t* chip)
         // Set I = nnn.
 
         // The value of register I is set to nnn.
-
+        case 0xA:
+        {
+            chip->i = chip->instruction->nnn;
+        }
 
         // Bnnn - JP V0, addr
         // Jump to location nnn + V0.

@@ -63,10 +63,7 @@ void draw(sdl_t *sdl, chip8_t* chip)
             SDL_RenderFillRect(sdl->renderer, &rect);
         }
     }
-    
-    
     SDL_RenderPresent(sdl->renderer);
-    
 }
 
 void close_sdl(sdl_t *sdl)

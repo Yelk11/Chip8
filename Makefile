@@ -8,13 +8,18 @@ EXE := play
 SRC := $(wildcard $(SRC_DIR)/*.c)
 OBJ := $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-# CPPFLAGS :=  -Iinclude -MMD -MP 
-# CFLAGS   := -Wall -g 
+CPPFLAGS :=  -Iinclude -MMD -MP 
+CFLAGS   := -Wall
 LIBS	 := -I/opt/homebrew/include/SDL2 -D_THREAD_SAFE -L/opt/homebrew/lib -lSDL2
 
 .PHONY: all clean
 
-all: $(EXE)
+all: executable
+
+debug: CFLAGS += -g -DDEBUG
+debug: executable
+
+executable: $(EXE)
 
 $(EXE): $(OBJ)
 	$(CC) $^ -o $@ $(LIBS)
@@ -27,6 +32,9 @@ $(OBJ_DIR):
 
 clean:
 	@$(RM) -rv $(BIN_DIR) $(OBJ_DIR)
+
+
+	
 
 -include $(OBJ:.o=.d)
 
