@@ -47,13 +47,25 @@ void draw(sdl_t *sdl, chip8_t* chip)
 
     SDL_Rect rect = {.x = 0, .y = 0, .w = sdl->config->scale_factor, .h = sdl->config->scale_factor};
 
-    for (int x = 0; x < WIDTH * sdl->config->scale_factor; x++)
+    for (uint32_t i = 0; i < sizeof chip->display; i++)
     {
-        for (int y = 0; y < HEIGHT * sdl->config->scale_factor; y++)
+        rect.x = (i % WIDTH) * sdl->config->scale_factor;
+        rect.y = (i / WIDTH) * sdl->config->scale_factor;
+
+        if (chip->display[i]) 
         {
-            
+            // if pixel is on draw fg colour
+            SDL_SetRenderDrawColor(sdl->renderer, 0, 0xFF, 0, 0);
+            SDL_RenderFillRect(sdl->renderer, &rect);
+        } 
+        else 
+        {
+            // if pixel is off draw bg colour
+            SDL_SetRenderDrawColor(sdl->renderer, 0x00, 0xFF, 0x0, 0x0);
+            SDL_RenderFillRect(sdl->renderer, &rect);
         }
     }
+    
     
     SDL_RenderPresent(sdl->renderer);
     
@@ -148,7 +160,7 @@ int main( int argc, char* args[] )
     
     SDL_Event e; 
     bool quit = false;
-    
+
     while( quit == false )
     { 
         while( SDL_PollEvent( &e ) )
@@ -159,8 +171,10 @@ int main( int argc, char* args[] )
             }
         }
         // run next instruction
-        run_instruction(chip);
+        // run_instruction(chip);
         // draw screen
+        
+        memset(&chip->display[0], true, sizeof(chip->display));
         draw(sdl, chip);
     }
     return 0;

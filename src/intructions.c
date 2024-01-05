@@ -19,7 +19,7 @@ void next(chip8_t* chip)
 void run_instruction(chip8_t* chip)
 {
     next(chip);
-
+    
     switch(chip->instruction->opcode)
     {
         case 0x0:
@@ -42,6 +42,7 @@ void run_instruction(chip8_t* chip)
             */
             else if (chip->instruction->opcode == 0x00EE)
             {
+                printf("Return from subroutine %d\n", chip->instruction->opcode);
                 break;
             }
             /*
@@ -52,19 +53,16 @@ void run_instruction(chip8_t* chip)
             */
             else
             {
+                
                 break;
             }
-            
-                
-
-
             break;
 
 
 
         // 1nnn - JP addr
         // Jump to location nnn.
-
+        
         // The interpreter sets the program counter to nnn.
 
 
@@ -251,5 +249,8 @@ void run_instruction(chip8_t* chip)
         // Read registers V0 through Vx from memory starting at location I.
 
         // The interpreter reads values from memory starting at location I into registers V0 through Vx.
+
+        default:
+            printf("OPCODE %X not implemented\n", chip->instruction->opcode);
     }
 }
