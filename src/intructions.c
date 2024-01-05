@@ -1,6 +1,7 @@
 #include "instructions.h"
+#include "chip8.h"
 
-
+#include <stdint.h>
 
 
 void next(chip8_t* chip)
@@ -20,10 +21,10 @@ void run_instruction(chip8_t* chip)
 {
     next(chip);
     
-    switch(chip->instruction->opcode)
+    switch(chip->instruction->opcode & 0xF000)
     {
         case 0x0:
-            
+        {
             /*
                 00E0 - CLS
                 Clear the display.
@@ -42,7 +43,8 @@ void run_instruction(chip8_t* chip)
             */
             else if (chip->instruction->opcode == 0x00EE)
             {
-                printf("Return from subroutine %d\n", chip->instruction->opcode);
+                chip->pc = *chip->stack_ptr;
+                chip->stack_ptr--;
                 break;
             }
             /*
@@ -53,17 +55,18 @@ void run_instruction(chip8_t* chip)
             */
             else
             {
-                
-                break;
+                chip->pc = chip->instruction->nnn;
             }
             break;
-
+        }
 
 
         // 1nnn - JP addr
         // Jump to location nnn.
         
         // The interpreter sets the program counter to nnn.
+        case 0x1:
+            chip->pc = chip->instruction->nnn;
 
 
         // 2nnn - CALL addr
@@ -94,7 +97,12 @@ void run_instruction(chip8_t* chip)
         // Set Vx = kk.
 
         // The interpreter puts the value kk into register Vx.
-
+        case 0x6:
+        {
+            chip->v[chip->instruction->x] = chip->instruction->kk;
+            break;
+        }
+            
 
         // 7xkk - ADD Vx, byte
         // Set Vx = Vx + kk.
@@ -183,7 +191,41 @@ void run_instruction(chip8_t* chip)
         // Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision.
 
         // The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen. See instruction 8xy3 for more information on XOR, and section 2.4, Display, for more information on the Chip-8 screen and sprites.
+        case 0xD:
+        {
+            uint8_t x = chip->v[chip->instruction->x] % WIDTH;
+            uint8_t y = chip->v[chip->instruction->y] % HEIGHT;
 
+            const uint8_t og_x = x;
+
+            chip->v[0x0F] = 0;
+            // loop over sprite rows (N in total)
+            for (uint8_t i = 0; i < chip->instruction->n; i++) {
+                const uint8_t sprite_data = chip->memory[chip->i + i]; // next byte/row of sprite data
+
+                x = og_x; // reset x for the next row to draw
+
+                for (int8_t j = 7; j >= 0; j--) {
+                    const bool sprite_bit = (sprite_data & (1 << j));
+                    bool *pixel           = &chip->display[y * WIDTH + x];
+
+                    // if sprite pixel is on and display pixel is on, set carry flag
+                    if (sprite_bit && *pixel) chip->v[0x0F] = 1;
+
+                    // xor display pixel with sprite pixel to set it on/off
+                    *pixel ^= sprite_bit;
+
+                    // stop drawing if we hit right screen edge
+                    if (++x >= WIDTH) break;
+                }
+
+                // stop drawing the entire sprite if we hit bottom screen edge
+                if (++y >= HEIGHT) break;
+            }
+            chip->redraw = true; // will update the screen on next tick
+            break;
+        }
+            
 
         // Ex9E - SKP Vx
         // Skip next instruction if key with the value of Vx is pressed.

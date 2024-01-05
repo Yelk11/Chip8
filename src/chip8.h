@@ -8,6 +8,11 @@
 #include <stdio.h>
 #include <stdint.h>
 
+
+#define  WIDTH 64
+#define  HEIGHT 32
+
+
 typedef struct {
     uint16_t opcode; // 16 bit opcode
     uint8_t nnn;    // nnn or addr - A 12-bit value, the lowest 12 bits of the instruction

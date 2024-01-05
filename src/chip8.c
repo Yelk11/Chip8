@@ -7,9 +7,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-// Screen dimension constants
-const int WIDTH = 64;
-const int HEIGHT = 32;
+
 
 sdl_t* init_sdl(config_t* config)
 {
@@ -61,7 +59,7 @@ void draw(sdl_t *sdl, chip8_t* chip)
         else 
         {
             // if pixel is off draw bg colour
-            SDL_SetRenderDrawColor(sdl->renderer, 0x00, 0xFF, 0x0, 0x0);
+            SDL_SetRenderDrawColor(sdl->renderer, 0x00, 0x00, 0x00, 0x00);
             SDL_RenderFillRect(sdl->renderer, &rect);
         }
     }
@@ -160,7 +158,7 @@ int main( int argc, char* args[] )
     
     SDL_Event e; 
     bool quit = false;
-
+    memset(&chip->display[0], true, sizeof(chip->display));
     while( quit == false )
     { 
         while( SDL_PollEvent( &e ) )
@@ -171,10 +169,8 @@ int main( int argc, char* args[] )
             }
         }
         // run next instruction
-        // run_instruction(chip);
+        run_instruction(chip);
         // draw screen
-        
-        memset(&chip->display[0], true, sizeof(chip->display));
         draw(sdl, chip);
     }
     return 0;
