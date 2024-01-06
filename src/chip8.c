@@ -162,7 +162,7 @@ int main( int argc, char* args[] )
         { 
             if( e.type == SDL_QUIT ) 
             {
-                quit = true; 
+                quit = true;
             }
         }
         // run next instruction

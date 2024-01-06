@@ -6,8 +6,9 @@
 
 void next(chip8_t* chip)
 {
-    chip->pc++;
+    
     chip->instruction->opcode  = chip->memory[chip->pc];
+    chip->pc += 2;
     chip->instruction->nnn  = chip->instruction->opcode  & 0x0FFF;
     chip->instruction->kk   = chip->instruction->opcode  & 0x00FF;
     chip->instruction->n    = chip->instruction->opcode  & 0x000F;
