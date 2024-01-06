@@ -153,20 +153,35 @@ int main( int argc, char* args[] )
     // init ship and load rom
     chip8_t* chip = init_chip("roms/IBM Logo.ch8");
     
-    SDL_Event e; 
+    SDL_Event event; 
     bool quit = false;
     memset(&chip->display[0], true, sizeof(chip->display));
     while( quit == false )
     { 
-        while( SDL_PollEvent( &e ) )
-        { 
-            if( e.type == SDL_QUIT ) 
-            {
-                quit = true;
+        #ifdef DEBUG
+            if(SDL_WaitEvent(&event)){
+                if(event.type == SDL_QUIT){
+                    quit = true;
+                }else if(event.type == SDL_MOUSEBUTTONDOWN){
+                    // run next instruction
+                    printf("HEllo\n");
+                    run_instruction(chip);
+                }
+                
             }
-        }
-        // run next instruction
-        run_instruction(chip);
+        #else
+            while( SDL_PollEvent( &event ) )
+            { 
+                if( event.type == SDL_QUIT ) 
+                {
+                    quit = true;
+                }
+            }
+            // run next instruction
+            run_instruction(chip);
+        #endif
+        
+        
         // draw screen
         draw(sdl, chip);
     }

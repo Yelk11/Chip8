@@ -12,8 +12,8 @@ void next(chip8_t* chip)
     chip->instruction->nnn  = chip->instruction->opcode  & 0x0FFF;
     chip->instruction->kk   = chip->instruction->opcode  & 0x00FF;
     chip->instruction->n    = chip->instruction->opcode  & 0x000F;
-    chip->instruction->x    = (chip->instruction->opcode >> 4)  & 0x0F;
-    chip->instruction->y    = (chip->instruction->opcode >> 8) & 0x0F;
+    chip->instruction->x    = (chip->instruction->opcode >> 8)  & 0x0F;
+    chip->instruction->y    = (chip->instruction->opcode >> 4) & 0x0F;
     
 }
 
@@ -22,7 +22,7 @@ void run_instruction(chip8_t* chip)
 {
     next(chip);
     
-    switch(chip->instruction->opcode & 0xF000)
+    switch((chip->instruction->opcode & 0xF000) >> 12)
     {
         case 0x0:
         {
@@ -32,6 +32,9 @@ void run_instruction(chip8_t* chip)
             */
             if(chip->instruction->opcode == 0x00E0)
             {
+                #ifdef DEBUG
+                    printf("00E0 - CLS: Clear the display.\n");
+                #endif
                 memset(&chip->display[0], false, sizeof(chip->display));
                 chip->redraw = true;
             }
@@ -44,6 +47,9 @@ void run_instruction(chip8_t* chip)
             */
             else if (chip->instruction->opcode == 0x00EE)
             {
+                #ifdef DEBUG
+                    printf("00EE - RET: Return from a subroutine.\n");
+                #endif
                 chip->pc = *chip->stack_ptr;
                 chip->stack_ptr--;
                 break;
@@ -56,7 +62,8 @@ void run_instruction(chip8_t* chip)
             */
             else
             {
-                chip->pc = chip->instruction->nnn;
+                
+                // chip->pc = chip->instruction->nnn;
             }
             break;
         }
@@ -68,6 +75,9 @@ void run_instruction(chip8_t* chip)
         // The interpreter sets the program counter to nnn.
         case 0x1:
         {
+            #ifdef DEBUG
+                printf("1nnn - JP addr: Jump to location nnn(%X).", chip->instruction->nnn);
+            #endif
             chip->pc = chip->instruction->nnn;
             break;
         }
@@ -104,6 +114,9 @@ void run_instruction(chip8_t* chip)
         // The interpreter puts the value kk into register Vx.
         case 0x6:
         {
+            #ifdef DEBUG
+                printf("6xkk - LD Vx, byte: Set Vx(%X) = kk(%X).", chip->v[chip->instruction->x], chip->instruction->kk);
+            #endif
             chip->v[chip->instruction->x] = chip->instruction->kk;
             break;
         }
@@ -115,6 +128,9 @@ void run_instruction(chip8_t* chip)
         // Adds the value kk to the value of register Vx, then stores the result in Vx. 
         case 0x7:
         {
+            #ifdef DEBUG
+                printf("7xkk - ADD Vx, byte: Set Vx(%X) = Vx(%X) + kk(%X).", chip->v[chip->instruction->x], chip->v[chip->instruction->x], chip->instruction->kk);
+            #endif
             chip->v[chip->instruction->x] = chip->v[chip->instruction->x] + chip->instruction->kk;
             break;
         }
@@ -185,6 +201,9 @@ void run_instruction(chip8_t* chip)
         // The value of register I is set to nnn.
         case 0xA:
         {
+            #ifdef DEBUG
+                printf("Annn - LD I, addr: Set I = nnn(%X).\n", chip->instruction->nnn);
+            #endif
             chip->i = chip->instruction->nnn;
         }
 
@@ -206,6 +225,9 @@ void run_instruction(chip8_t* chip)
         // The interpreter reads n bytes from memory, starting at the address stored in I. These bytes are then displayed as sprites on screen at coordinates (Vx, Vy). Sprites are XORed onto the existing screen. If this causes any pixels to be erased, VF is set to 1, otherwise it is set to 0. If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen. See instruction 8xy3 for more information on XOR, and section 2.4, Display, for more information on the Chip-8 screen and sprites.
         case 0xD:
         {
+            #ifdef DEBUG
+                printf("Dxyn - DRW Vx(%X), Vy(%X), nibble(%X)\n", chip->v[chip->instruction->x], chip->v[chip->instruction->y], chip->instruction->n);
+            #endif
             uint8_t x = chip->v[chip->instruction->x] % WIDTH;
             uint8_t y = chip->v[chip->instruction->y] % HEIGHT;
 
