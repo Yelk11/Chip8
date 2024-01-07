@@ -6,14 +6,26 @@
 
 void next(chip8_t* chip)
 {
-    
     chip->instruction->opcode  = chip->memory[chip->pc];
+    chip->instruction->opcode <<= 8;
+    chip->instruction->opcode  |= chip->memory[chip->pc + 1];
     chip->pc += 2;
     chip->instruction->nnn  = chip->instruction->opcode  & 0x0FFF;
     chip->instruction->kk   = chip->instruction->opcode  & 0x00FF;
     chip->instruction->n    = chip->instruction->opcode  & 0x000F;
     chip->instruction->x    = (chip->instruction->opcode >> 8)  & 0x0F;
     chip->instruction->y    = (chip->instruction->opcode >> 4) & 0x0F;
+
+    #ifdef DEBUG
+        printf("Opcode: %.4X\n", chip->instruction->opcode);
+        printf("nnn: %.4X\n", chip->instruction->nnn);
+        printf("kk: %.4X\n", chip->instruction->kk);
+        printf("n: %.4X\n", chip->instruction->n);
+        printf("x: %.4X\n", chip->instruction->x);
+        printf("y: %.4X\n", chip->instruction->y);
+        printf("pc: %.4X\n\n", chip->pc);
+        
+    #endif
     
 }
 

@@ -164,7 +164,6 @@ int main( int argc, char* args[] )
                     quit = true;
                 }else if(event.type == SDL_MOUSEBUTTONDOWN){
                     // run next instruction
-                    printf("HEllo\n");
                     run_instruction(chip);
                 }
                 
