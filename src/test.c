@@ -51,6 +51,7 @@ bool test_00E0_CLS()
 {
     // setup
     chip8_t* chip = test_setup(0x00E0);
+    memset(&chip->display[0], true, sizeof(chip->display));
     run_instruction(chip);
     int sum = 0;
     for (int i = 0; i < WIDTH * HEIGHT; i++)
@@ -64,11 +65,15 @@ bool test_00E0_CLS()
 bool test_00EE_RET()
 {
     chip8_t* chip = test_setup(0x00E0);
-    int test_pc = chip->pc;
-    
+    uint16_t test_pc = chip->pc;
     run_instruction(chip);
-    
-    return test_pc == *chip->stack_ptr;
+    if (test_pc == *chip->stack_ptr){
+        return true;
+    }else{
+        printf("test_pc: %.4X\n", test_pc);
+        printf("stack pointer: %.4X\n", *chip->stack_ptr);
+        return false;
+    }
 }
 
 // 1nnn - JP addr
@@ -76,7 +81,14 @@ bool test_1nnn_JP_addr()
 {
     chip8_t* chip = test_setup(0x1234);
     run_instruction(chip);
-    return chip->instruction->kk == 0x34;
+    if ( chip->pc == 0x34 )
+    {
+        return true;
+    } else {
+        printf("pc: %.4X\n", chip->pc);
+        printf("nnn: %.4X\n",chip->instruction->nnn);
+        return false;
+    }
 }
 
 // 6xkk - LD Vx, byte

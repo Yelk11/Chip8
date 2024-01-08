@@ -16,15 +16,16 @@ void next(chip8_t* chip)
     chip->instruction->x    = (chip->instruction->opcode >> 8)  & 0x0F;
     chip->instruction->y    = (chip->instruction->opcode >> 4) & 0x0F;
 
-    #ifdef DEBUG
-        printf("Opcode: %.4X\n", chip->instruction->opcode);
-        printf("nnn: %.4X\n", chip->instruction->nnn);
-        printf("kk: %.4X\n", chip->instruction->kk);
-        printf("n: %.4X\n", chip->instruction->n);
-        printf("x: %.4X\n", chip->instruction->x);
-        printf("y: %.4X\n", chip->instruction->y);
-        printf("pc: %.4X\n\n", chip->pc);
-    #endif
+    // #ifdef DEBUG
+    //     printf("Opcode: %.4X\n", chip->instruction->opcode);
+    //     printf("nnn: %.4X\n", chip->instruction->nnn);
+    //     printf("kk: %.4X\n", chip->instruction->kk);
+    //     printf("n: %.4X\n", chip->instruction->n);
+    //     printf("x: %.4X\n", chip->instruction->x);
+    //     printf("y: %.4X\n", chip->instruction->y);
+    //     printf("I: %.4X\n", chip->i);
+    //     printf("pc: %.4X\n\n", chip->pc);
+    // #endif
 }
 
 
@@ -44,6 +45,7 @@ void run_instruction(chip8_t* chip)
             {
                 #ifdef DEBUG
                     printf("00E0 - CLS: Clear the display.\n");
+                    printf("Opcode: %.4X\n", chip->instruction->opcode);
                 #endif
                 memset(&chip->display[0], false, sizeof(chip->display));
                 chip->redraw = true;
@@ -57,11 +59,14 @@ void run_instruction(chip8_t* chip)
             */
             else if (chip->instruction->opcode == 0x00EE)
             {
-                #ifdef DEBUG
-                    printf("00EE - RET: Return from a subroutine.\n");
-                #endif
                 chip->pc = *chip->stack_ptr;
                 chip->stack_ptr--;
+                #ifdef DEBUG
+                    printf("00EE - RET: Return from a subroutine.\n");
+                    printf("Opcode: %.4X\n", chip->instruction->opcode);
+                    printf("pc: %.4X\n", chip->pc);
+                    printf("nnn: %.4X\n", *chip->stack_ptr);
+                #endif
                 break;
             }
             /*
@@ -85,10 +90,13 @@ void run_instruction(chip8_t* chip)
         // The interpreter sets the program counter to nnn.
         case 0x1:
         {
+            chip->pc = chip->instruction->nnn;
             #ifdef DEBUG
                 printf("1nnn - JP addr: Jump to location nnn(%X).", chip->instruction->nnn);
+                printf("Opcode: %.4X\n", chip->instruction->opcode);
+                printf("pc: %.4X\n", chip->pc);
+                printf("nnn: %.4X\n", chip->instruction->nnn);
             #endif
-            chip->pc = chip->instruction->nnn;
             break;
         }
             
@@ -124,10 +132,14 @@ void run_instruction(chip8_t* chip)
         // The interpreter puts the value kk into register Vx.
         case 0x6:
         {
+            chip->v[chip->instruction->x] = chip->instruction->kk;
             #ifdef DEBUG
                 printf("6xkk - LD Vx, byte: Set Vx(%X) = kk(%X).\n", chip->v[chip->instruction->x], chip->instruction->kk);
+                printf("Opcode: %.4X\n", chip->instruction->opcode);
+                printf("V[x]: %.4X\n", chip->v[chip->instruction->x]);
+                printf("x: %.4X\n", chip->instruction->x);
+                printf("kk: %.4X\n", chip->instruction->kk);
             #endif
-            chip->v[chip->instruction->x] = chip->instruction->kk;
             break;
         }
             
@@ -139,9 +151,14 @@ void run_instruction(chip8_t* chip)
         case 0x7:
         {
             #ifdef DEBUG
-                printf("7xkk - ADD Vx, byte: Set Vx(%X) = Vx(%X) + kk(%X).\n", chip->v[chip->instruction->x], chip->v[chip->instruction->x], chip->instruction->kk);
+                printf("7xkk - ADD Vx, byte\n");
+                printf("Opcode: %.4X\n", chip->instruction->opcode);
+                printf("V[x]: %.4X\n", chip->v[chip->instruction->x]);
             #endif
             chip->v[chip->instruction->x] = chip->v[chip->instruction->x] + chip->instruction->kk;
+            #ifdef DEBUG
+                printf("V[x] after addition: %.4X\n", chip->v[chip->instruction->x]);
+            #endif
             break;
         }
 
@@ -209,12 +226,21 @@ void run_instruction(chip8_t* chip)
         // Set I = nnn.
 
         // The value of register I is set to nnn.
-        case 0xA:
+        case 0xA: // TODO: nnn is only kk?
         {
+            /*
+            Annn - LD I, addr: Set I = nnn(66).
+                Opcode: A266
+                i: 0066
+                nnn: 0066
+            */
+            chip->i = chip->instruction->nnn;
             #ifdef DEBUG
                 printf("Annn - LD I, addr: Set I = nnn(%X).\n", chip->instruction->nnn);
+                printf("Opcode: %.4X\n", chip->instruction->opcode);
+                printf("i: %.4X\n", chip->i);
+                printf("nnn: %.4X\n", chip->instruction->nnn);
             #endif
-            chip->i = chip->instruction->nnn;
         }
 
         // Bnnn - JP V0, addr

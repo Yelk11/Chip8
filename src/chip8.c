@@ -185,7 +185,9 @@ int main( int argc, char* args[] )
         #endif
         
         // draw screen
-        draw(sdl, chip);
+        if(chip->redraw){
+            draw(sdl, chip);
+        }
     }
     #endif
     return 0;
