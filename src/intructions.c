@@ -24,9 +24,7 @@ void next(chip8_t* chip)
         printf("x: %.4X\n", chip->instruction->x);
         printf("y: %.4X\n", chip->instruction->y);
         printf("pc: %.4X\n\n", chip->pc);
-        
     #endif
-    
 }
 
 
@@ -127,7 +125,7 @@ void run_instruction(chip8_t* chip)
         case 0x6:
         {
             #ifdef DEBUG
-                printf("6xkk - LD Vx, byte: Set Vx(%X) = kk(%X).", chip->v[chip->instruction->x], chip->instruction->kk);
+                printf("6xkk - LD Vx, byte: Set Vx(%X) = kk(%X).\n", chip->v[chip->instruction->x], chip->instruction->kk);
             #endif
             chip->v[chip->instruction->x] = chip->instruction->kk;
             break;
@@ -141,7 +139,7 @@ void run_instruction(chip8_t* chip)
         case 0x7:
         {
             #ifdef DEBUG
-                printf("7xkk - ADD Vx, byte: Set Vx(%X) = Vx(%X) + kk(%X).", chip->v[chip->instruction->x], chip->v[chip->instruction->x], chip->instruction->kk);
+                printf("7xkk - ADD Vx, byte: Set Vx(%X) = Vx(%X) + kk(%X).\n", chip->v[chip->instruction->x], chip->v[chip->instruction->x], chip->instruction->kk);
             #endif
             chip->v[chip->instruction->x] = chip->v[chip->instruction->x] + chip->instruction->kk;
             break;

@@ -1,5 +1,5 @@
-obj/chip8.o: src/chip8.c src/chip8.h /opt/homebrew/include/SDL2/SDL.h \
-  /opt/homebrew/include/SDL2/SDL_main.h \
+obj/test.o: src/test.c src/test.h src/chip8.h \
+  /opt/homebrew/include/SDL2/SDL.h /opt/homebrew/include/SDL2/SDL_main.h \
   /opt/homebrew/include/SDL2/SDL_stdinc.h \
   /opt/homebrew/include/SDL2/SDL_config.h \
   /opt/homebrew/include/SDL2/SDL_platform.h \
@@ -47,7 +47,9 @@ obj/chip8.o: src/chip8.c src/chip8.h /opt/homebrew/include/SDL2/SDL.h \
   /opt/homebrew/include/SDL2/SDL_timer.h \
   /opt/homebrew/include/SDL2/SDL_version.h \
   /opt/homebrew/include/SDL2/SDL_locale.h \
-  /opt/homebrew/include/SDL2/SDL_misc.h src/instructions.h src/test.h
+  /opt/homebrew/include/SDL2/SDL_misc.h src/instructions.h
+
+src/test.h:
 
 src/chip8.h:
 
@@ -152,5 +154,3 @@ src/chip8.h:
 /opt/homebrew/include/SDL2/SDL_misc.h:
 
 src/instructions.h:
-
-src/test.h:

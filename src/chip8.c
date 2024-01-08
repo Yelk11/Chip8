@@ -1,5 +1,6 @@
 #include "chip8.h"
 #include "instructions.h"
+#include "test.h"
 
 #include <SDL.h>
 #include <stdio.h>
@@ -39,9 +40,7 @@ sdl_t* init_sdl(config_t* config)
 
 void draw(sdl_t *sdl, chip8_t* chip)
 {
-    SDL_SetRenderDrawColor(sdl->renderer, 0, 0, 0, 0);
     SDL_RenderClear(sdl->renderer);
-    SDL_SetRenderDrawColor(sdl->renderer, 255, 0, 0, 255);
 
     SDL_Rect rect = {.x = 0, .y = 0, .w = sdl->config->scale_factor, .h = sdl->config->scale_factor};
 
@@ -156,6 +155,11 @@ int main( int argc, char* args[] )
     SDL_Event event; 
     bool quit = false;
     memset(&chip->display[0], true, sizeof(chip->display));
+    #ifdef TEST
+        test_all();
+    #else
+
+    
     while( quit == false )
     { 
         #ifdef DEBUG
@@ -180,10 +184,10 @@ int main( int argc, char* args[] )
             run_instruction(chip);
         #endif
         
-        
         // draw screen
         draw(sdl, chip);
     }
+    #endif
     return 0;
 }
 

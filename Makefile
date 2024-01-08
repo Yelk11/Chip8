@@ -19,6 +19,9 @@ all: executable
 debug: CFLAGS += -g -DDEBUG
 debug: executable
 
+test: CFLAGS += -g -DTEST
+test: executable
+
 executable: $(EXE)
 
 $(EXE): $(OBJ)
